@@ -5,6 +5,8 @@ html {
 
 body {
   background-color: white;
+  padding: 0;
+  margin: 0;
 }
 
 .container {
@@ -28,17 +30,24 @@ body {
   flex-wrap: wrap;
 }
 
-.row__actions,
 .row__doors {
   justify-content: space-evenly;
   margin-top: 0.5rem;
 }
 
+.row__actions {
+  justify-content: space-evenly;
+}
+
 .actions {
   background-color: white;
   border-bottom: 1px solid lightgray;
-  padding: 0.5rem 0 0.5rem 0;
+  padding-bottom: 0.5rem;
   width: inherit;
+}
+
+.actions {
+  padding-top: 0.5rem;
 }
 
 .actions--sticky {
@@ -47,7 +56,7 @@ body {
 }
 
 .actions--sticky + .row__doors {
-  /*padding-top: 3rem;*/
+  padding-top: calc(1px + 3rem);
 }
 
 .cell {
@@ -92,12 +101,12 @@ body {
 }
 
 .action {
-  font-size: 1.5rem;
-  padding: 0.2rem;
+  font-size: 1rem;
+  margin: 0 0.5rem 0.25rem 0.5rem;
 }
 
 [name="doors-count"] {
   padding: 0 0.2rem 0 0.2rem;
-  width: 6rem;
+  width: 3rem;
   border: 1px solid skyblue;
 }

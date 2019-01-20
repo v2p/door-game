@@ -22,24 +22,41 @@ function createDoorClickHandler(index) {
   };
 }
 
-function actionOpenOneBadDoor() {
+function actionLeaveTwoDoors() {
+  var closedBadDoorsIndices = [];
   var badDoorsIndices = [];
+  var goodDoorIndex;
 
   Array.prototype.forEach.call(doorsData, function (isGoodDoor, i) {
-    if (
-      !isGoodDoor &&
-      openDoors[i] !== true &&
-      selectedDoorIndex !== i
-    ) {
+    if (isGoodDoor) {
+      goodDoorIndex = i;
+    }
+
+    if (goodDoorIndex !== i) {
       badDoorsIndices.push(i);
+
+      if (openDoors[i] !== true) {
+        closedBadDoorsIndices.push(i);
+      }
     }
   });
 
-  var doorIndexToOpen = badDoorsIndices[getRandomInt(0, badDoorsIndices.length)];
+  var isUserSelectedBadDoor = closedBadDoorsIndices.indexOf(selectedDoorIndex) !== -1;
+  var badDoorToLeaveClosed;
 
-  if (typeof doorIndexToOpen !== 'undefined') {
-    openDoor(doorIndexToOpen);
+  if (isUserSelectedBadDoor) {
+    badDoorToLeaveClosed = selectedDoorIndex;
+  } else {
+    badDoorToLeaveClosed = closedBadDoorsIndices[getRandomInt(0, closedBadDoorsIndices.length)];
   }
+
+  Array.prototype.forEach.call(doorsData, function (isGoodDoor, i) {
+    if (i === badDoorToLeaveClosed || i === goodDoorIndex || i === selectedDoorIndex) {
+      return;
+    }
+
+    openDoor(i);
+  });
 }
 
 function actionOpenAll() {
@@ -65,19 +82,23 @@ function openDoor(index) {
 }
 
 var doorsCount;
+var doorsCountInput = null;
 var doors = [];
 var doorsData = [];
 var selectedDoorIndex = null;
 var openDoors = [];
 
 function regenerateDoors() {
-  doorsCount = parseInt(document.querySelector('[name="doors-count"]').value, 10);
+  doorsCount = parseInt(doorsCountInput.value, 10);
+
+  if (doorsCount > 1000) {
+    return;
+  }
 
   Array.prototype.forEach.call(doors, function (door) {
     door.remove();
   });
 
-  // create new doors:
   var doorsRow = document.getElementsByClassName('row__doors')[0];
 
   doorsData = [];
@@ -109,9 +130,31 @@ function initActionsRow() {
       actions.classList.remove('actions--sticky');
     }
   };
+
+  doorsCountInput = document.querySelector('[name="doors-count"]');
+
+  var numericKeys = [];
+  for (var i = 0; i < 10; i++) {
+    numericKeys.push('' + i);
+  }
+
+  doorsCountInput.addEventListener('keypress', function (event) {
+    if (event.ctrlKey || event.altKey || event.metaKey) {
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      regenerateDoors();
+      return;
+    }
+
+    if (numericKeys.indexOf(event.key) === -1) {
+      event.preventDefault();
+    }
+  });
 }
 
 onDocumentReady(function () {
-  regenerateDoors();
   initActionsRow();
+  regenerateDoors();
 });
